@@ -6,43 +6,76 @@ class BienvenidaScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: Center(
-          child: Text("WELCOM", style: TextStyle(color: Colors.red)),
-        ),
-      ),
-
+      backgroundColor: Colors.white, 
+      appBar: AppBar(),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center, // centra verticalmente
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const Text(
+              "WELCOME",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 5,
+              ),
+            ),
+                  const SizedBox(height: 100), 
+
             ElevatedButton(
               onPressed: () => Login(context),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red, // botón rojo estilo Netflix
+                backgroundColor: Colors.blueAccent, 
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 50,
+                  vertical: 18,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(
+                    14,
+                  ), // esquinas redondeadas
+                ),
+                elevation: 3,
               ),
-              child: Text(
-                "Iniciar sesion",
-                style: TextStyle(color: Colors.white),
+              child: const Text(
+                "Iniciar sesión",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 1.2,
+                ),
               ),
             ),
-            SizedBox(height: 10),
+
+            const SizedBox(height: 20),
 
             ElevatedButton(
               onPressed: () => Registro(context),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              child: Text("Registrate", style: TextStyle(color: Colors.white)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor:
+                    Colors.deepPurpleAccent, 
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 50,
+                  vertical: 18,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                elevation: 3,
+              ),
+              child: const Text(
+                "Registrarse",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 1.2,
+                ),
+              ),
             ),
-
-              const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () => Home(context),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              child: const Text("Entrar al Home", style: TextStyle(color: Colors.white)),
-            ),
-          ], // centra verticalmente
+          ],
         ),
       ),
     );
@@ -53,10 +86,6 @@ void Login(BuildContext context) {
   Navigator.pushNamed(context, "/LoginScreen");
 }
 
-void Registro(context) {
+void Registro(BuildContext context) {
   Navigator.pushNamed(context, "/RegistroScreen");
-}
-
-void Home(BuildContext context) {
-  Navigator.pushNamed(context, "/HomeScreen");
 }
