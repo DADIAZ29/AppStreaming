@@ -1,5 +1,4 @@
 import 'package:app_streaming/main.dart';
-import 'package:app_streaming/screens/HomeScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -119,7 +118,7 @@ Future<void> login(BuildContext context, TextEditingController correo, TextEditi
     final User? user = res.user;
 
     if (user != null) {
-      Navigator.pushNamed(context, "/HomeScreen");
+      Navigator.pushNamed(context, "/CatalogoScreen");
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Credenciales incorrectas")),

@@ -32,21 +32,22 @@ Future<List<dynamic>> catalogo() async {
     return data;
   } catch (error) {
     debugPrint("Error al consultar catálogo: $error");
-    return []; // evita crash devolviendo lista vacía
+    return [];
   }
 }
 
 Future<void> eliminarPelicula(BuildContext context, String id) async {
   try {
     await supabase.from('peliculas').delete().eq('id', id);
-
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Película eliminada correctamente")),
     );
+    // refrescar pantalla
+    Navigator.pushReplacementNamed(context, "/CatalogoScreen");
   } catch (error) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text("Error al eliminar: $error")));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Error al eliminar: $error")),
+    );
   }
 }
 
@@ -70,6 +71,8 @@ Widget lista() {
         itemCount: data.length,
         itemBuilder: (context, index) {
           final item = data[index];
+          final videoUrl = item['video'] ?? "";
+
           return Card(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -83,23 +86,19 @@ Widget lista() {
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(12),
                   ),
-                  child: Container(
-                    color: Colors.black12,
-                    child: Image.network(
-                      item['portada'],
-                      width: double.infinity,
-                      height: 220,
-                      fit: BoxFit.contain,
-                      alignment: Alignment.center,
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(20),
-                            child: Text("Error al cargar imagen"),
-                          ),
-                        );
-                      },
-                    ),
+                  child: Image.network(
+                    item['portada'] ?? "",
+                    width: double.infinity,
+                    height: 220,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(20),
+                          child: Text("Error al cargar imagen"),
+                        ),
+                      );
+                    },
                   ),
                 ),
                 Padding(
@@ -107,50 +106,68 @@ Widget lista() {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        item['titulo'],
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
+                      Text(item['titulo'] ?? "Sin título",
+                          style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black)),
                       const SizedBox(height: 6),
-                      Text(
-                        "Categoría: ${item['categoria']}",
-                        style: const TextStyle(color: Colors.grey),
-                      ),
+                      Text("Categoría: ${item['categoria'] ?? "N/A"}",
+                          style: const TextStyle(color: Colors.grey)),
                       const SizedBox(height: 6),
-                      Text(
-                        item['descripcion'],
-                        style: const TextStyle(color: Colors.black87),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        "Video: ${item['video']}",
-                        style: const TextStyle(color: Colors.blueAccent),
-                      ),
+                      Text(item['descripcion'] ?? "Sin descripción",
+                          style: const TextStyle(color: Colors.black87)),
                       const SizedBox(height: 12),
 
                       Align(
                         alignment: Alignment.centerRight,
-                        child: FilledButton(
-                          onPressed: () =>
-                              eliminarPelicula(context, item['id']),
-                          style: FilledButton.styleFrom(
-                            backgroundColor: Colors.redAccent,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 10,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            FilledButton(
+                              onPressed: () {
+                                if (videoUrl.isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text("No hay URL de video")),
+                                  );
+                                  return;
+                                }
+                                Navigator.pushNamed(
+                                  context,
+                                  "/PlayerScreen",
+                                  arguments: videoUrl,
+                                );
+                              },
+                              style: FilledButton.styleFrom(
+                                backgroundColor: Colors.blueAccent,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 10),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              child: const Text("Reproducir",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 14)),
                             ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                            const SizedBox(width: 10),
+                            FilledButton(
+                              onPressed: () =>
+                                  eliminarPelicula(context, item['id']),
+                              style: FilledButton.styleFrom(
+                                backgroundColor: Colors.redAccent,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 10),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              child: const Text("Eliminar",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 14)),
                             ),
-                          ),
-                          child: const Text(
-                            "Eliminar",
-                            style: TextStyle(color: Colors.white, fontSize: 14),
-                          ),
+                          ],
                         ),
                       ),
                     ],
